@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../widget/social_button.dart';
 import '../../widget/textfield.dart';
 import '../forgot_password/view.dart';
+import '../signup/view.dart';
 import 'logic.dart';
 
 class LogInPage extends StatefulWidget {
@@ -21,9 +22,11 @@ class _LogInPageState extends State<LogInPage> {
   final LogInController controller = Get.put(LogInController());
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(), // Screen par kahin bhi tap karne se focus khatam ho jayega
+      child: Scaffold(
+        body: SafeArea(
+          child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: Column(
@@ -145,7 +148,7 @@ class _LogInPageState extends State<LogInPage> {
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: TextButton(
                       onPressed: () {
-                        // Get.to(()=> SignUpPage());
+                        Get.to(()=> SignUp());
                       },
                       child: Text.rich(
                         TextSpan(
@@ -175,6 +178,7 @@ class _LogInPageState extends State<LogInPage> {
           ),
         ),
       ),
+    ),
     ),
     );
   }
