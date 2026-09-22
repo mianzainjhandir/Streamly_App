@@ -68,3 +68,5 @@ class SignUpController extends GetxController {
     }
   }
 }
+
+// I build the logic of signup.
