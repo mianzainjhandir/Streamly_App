@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LogInPage extends StatefulWidget {
@@ -45,7 +46,23 @@ class _LogInPageState extends State<LogInPage> {
                   ],
                 ),
               ),
-
+              Gap(15),
+              Text(
+                "Welcome back!",
+                style: GoogleFonts.poppins(
+                  color: Colors.black,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w300
+                )
+              ),
+              Text(
+                  "Sign in to continue",
+                  style: GoogleFonts.poppins(
+                      color: Colors.black45,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500
+                  )
+              ),
             ],
           ),
         ),
