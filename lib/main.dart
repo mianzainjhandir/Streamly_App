@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:streamly_app/screens/splash.dart';
 
 import 'firebase_options.dart';
 
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
 
       title: "Streaming App",
+      home: SplashScreen(),
 
     );
   }
