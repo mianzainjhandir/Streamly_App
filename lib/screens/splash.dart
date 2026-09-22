@@ -22,8 +22,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Image.asset('assets/images/img.png'),
+      body: SizedBox.expand(
+        child: Image.asset(
+          'assets/images/img.png',
+          fit: BoxFit.cover, // Image ko poori screen par fill karne ke liye
+        ),
       ),
     );
   }
