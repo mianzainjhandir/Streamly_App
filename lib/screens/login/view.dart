@@ -22,11 +22,12 @@ class _LogInPageState extends State<LogInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 35,left: 10,right: 10),
-          child: Column(
-            children: [
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Column(
+              children: [
               SizedBox(
                   height: 100,
                   width: 100,
@@ -140,6 +141,7 @@ class _LogInPageState extends State<LogInPage> {
           ),
         ),
       ),
+    ),
     );
   }
 }

@@ -47,28 +47,22 @@ class SocialLoginButtons extends StatelessWidget {
         const SizedBox(height: 15),
 
         // ================= GOOGLE + FACEBOOK =================
-        Row(
+        Column(
           children: [
-
             // Google
-            Expanded(
-
-              child: _socialButton(
-                imagePath: "assets/images/google1.png",
-                text: "Google",
-                onTap: onGoogleTap,
-              ),
+            _socialButton(
+              imagePath: "assets/images/google1.png",
+              text: "Google",
+              onTap: onGoogleTap,
             ),
 
-            const SizedBox(width: 10),
+            const SizedBox(height: 10),
 
             // Facebook
-            Expanded(
-              child: _socialButton(
-                imagePath: "assets/images/img_1.png",
-                text: "MicroSoft",
-                onTap: onMicroSoftTap,
-              ),
+            _socialButton(
+              imagePath: "assets/images/img_1.png",
+              text: "MicroSoft",
+              onTap: onMicroSoftTap,
             ),
           ],
         ),
@@ -85,6 +79,7 @@ class SocialLoginButtons extends StatelessWidget {
   }) {
     return SizedBox(
       height: 50,
+      width: double.infinity, // Buttons ko full width karne ke liye
       child: ElevatedButton(
         onPressed: onTap,
 
@@ -101,21 +96,21 @@ class SocialLoginButtons extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
             Image.asset(
               imagePath,
-              height: 30,
-              width: 30,
+              height: 24, // Size thora kam kiya
+              width: 24,
               fit: BoxFit.contain,
             ),
-
             const SizedBox(width: 10),
-
-            Text(
-              text,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+            Flexible( // Text ko flexible kiya taakay overflow na ho
+              child: Text(
+                text,
+                overflow: TextOverflow.ellipsis, // Text zyada ho toh dots aa jayein
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],
