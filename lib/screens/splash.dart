@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'home.dart';
+import 'login/view.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     // 5 seconds delay for splash screen
     Future.delayed(const Duration(seconds: 5), () {
-      Get.off(() => const HomeScreen()); // Navigate to HomeScreen and remove Splash from stack
+      Get.off(() => const LogInPage()); // Navigate to HomeScreen and remove Splash from stack
     });
   }
 
