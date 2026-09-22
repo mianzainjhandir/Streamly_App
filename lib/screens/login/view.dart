@@ -129,6 +129,7 @@ class _LogInPageState extends State<LogInPage> {
                   ),
                 ],
               ),
+              Gap(10),
               SocialLoginButtons(
                 onGoogleTap: () {
                   print("Google Login");
@@ -137,6 +138,39 @@ class _LogInPageState extends State<LogInPage> {
                   print("Facebook Login");
                 },
               ),
+                const SizedBox(height: 40),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: TextButton(
+                      onPressed: () {
+                        // Get.to(()=> SignUpPage());
+                      },
+                      child: Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "Don't have an account? ",
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey,
+                                fontSize: 15,
+                              ),
+                            ),
+                            TextSpan(
+                              text: "Sign Up",
+                              style: GoogleFonts.poppins(
+                                color: Colors.deepPurple,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

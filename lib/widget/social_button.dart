@@ -60,8 +60,8 @@ class SocialLoginButtons extends StatelessWidget {
 
             // Facebook
             _socialButton(
-              imagePath: "assets/images/img_1.png",
-              text: "MicroSoft",
+              imagePath: "assets/images/img_2.png",
+              text: "Facebook",
               onTap: onMicroSoftTap,
             ),
           ],
@@ -98,8 +98,8 @@ class SocialLoginButtons extends StatelessWidget {
           children: [
             Image.asset(
               imagePath,
-              height: 24, // Size thora kam kiya
-              width: 24,
+              height: 40, // Size thora kam kiya
+              width: 40,
               fit: BoxFit.contain,
             ),
             const SizedBox(width: 10),
