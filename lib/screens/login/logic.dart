@@ -2,7 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:streamly_app/screens/home.dart';
+import 'package:streamly_app/screens/main_navigation.dart';
 
 class LogInController extends GetxController{
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -27,8 +27,8 @@ class LogInController extends GetxController{
       emailController.clear();
       passController.clear();
 
-      // Navigate to Home
-      Get.offAll(() => const HomeScreen());
+      // Navigate to Main Navigation (With Bottom Bar)
+      Get.offAll(() => const MainNavigationScreen());
 
       return true; // ✅ Login Success
     } catch (e) {

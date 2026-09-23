@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:streamly_app/screens/home.dart';
+import 'package:streamly_app/screens/main_navigation.dart';
 
 class SignUpController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -57,8 +57,8 @@ class SignUpController extends GetxController {
       passwordController.clear();
       userNameController.clear();
 
-      // Navigate to Home
-      Get.offAll(() => const HomeScreen());
+      // Navigate to Main Navigation (With Bottom Bar)
+      Get.offAll(() => const MainNavigationScreen());
     } catch (e) {
       Get.snackbar("Error", e.toString(), backgroundColor: Colors.red, colorText: Colors.white);
     }

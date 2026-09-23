@@ -5,9 +5,14 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Home Screen")),
-      body: const Center(child: Text("Welcome to Streamly App!")),
+    return const Scaffold(
+      backgroundColor: Color(0xFF0F0F1A),
+      body: Center(
+        child: Text(
+          'Home Screen',
+          style: TextStyle(color: Colors.white, fontSize: 18),
+        ),
+      ),
     );
   }
 }
