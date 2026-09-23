@@ -1,5 +1,14 @@
 
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:streamly_app/screens/signup/logic.dart';
+
+import '../../widget/textfield.dart';
+import '../forgot_password/view.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -9,13 +18,177 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final SignUpController controller = Get.put(SignUpController());
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(), // Screen par kahin bhi tap karne se focus khatam ho jayega
+      child: Scaffold(
+        body: SafeArea(
           child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Column(
+                children: [
+                  SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: Image.asset('assets/images/logo.png',fit: BoxFit.cover,)),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Stream',
+                          style: GoogleFonts.poppins(
+                            color: Colors.black,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'ly',
+                          style: GoogleFonts.poppins(
+                            color: Colors.deepPurple,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Gap(10),
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                              "Create Account",
+                              style: GoogleFonts.poppins(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w300
+                              )
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                              "Join and start watching & creating",
+                              style: GoogleFonts.poppins(
+                                  color: Colors.black45,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500
+                              )
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
 
-          )
+                  Gap(10),
+                  CustomTextField(
+                    controller: controller.emailController,
+                    hintText: 'Email or Username',
+                    prefixIcon: Icons.email_outlined,
+                    focusColor: Colors.indigo,
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 15),
+                  // Password Field using CustomTextField
+                  CustomTextField(
+                    controller: controller.passwordController,
+                    hintText: 'Password',
+                    prefixIcon: Icons.lock_outline,
+                    isPassword: true,
+                    focusColor: Colors.indigo,
+
+                  ),
+                  Gap(15),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        controller.signUp();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: (){
+                              Get.to(()=> ForgotPassword());
+                            },
+                            child: Text("Forgot Password?",style: TextStyle(color: Colors.purple),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Gap(10),
+                  const SizedBox(height: 40),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: TextButton(
+                        onPressed: () {
+                          Get.to(()=> SignUp());
+                        },
+                        child: Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "Don't have an account? ",
+                                style: GoogleFonts.poppins(
+                                  color: Colors.grey,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              TextSpan(
+                                text: "Sign Up",
+                                style: GoogleFonts.poppins(
+                                  color: Colors.deepPurple,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 17,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
