@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'profile/view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -117,7 +119,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Gap(4),
                       // 2. PROFILE IMAGE (Aap yahan apni profile pic ka name set kar sakte hain)
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Get.to(() => const ProfileScreen());
+                        },
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(18),
                           child: Image.asset(
