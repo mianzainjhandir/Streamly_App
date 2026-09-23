@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../help_support/view.dart';
 import '../login/view.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -167,7 +168,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _buildMenuItem(
                 icon: Icons.help_outline_rounded,
                 title: 'Help & Support',
-                onTap: () {},
+                onTap: () {
+                  Get.to(() => const HelpSupportScreen());
+                },
               ),
 
               const Gap(30),
