@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'home.dart';
 import 'login/view.dart';
+import 'main_navigation.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,9 +15,16 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // 5 seconds delay for splash screen
-    Future.delayed(const Duration(seconds: 5), () {
-      Get.off(() => const LogInPage()); // Navigate to HomeScreen and remove Splash from stack
+    // Check authentication state after delay
+    Future.delayed(const Duration(seconds: 3), () {
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        // User already logged in -> Navigate directly to Main Navigation Screen
+        Get.off(() => const MainNavigationScreen());
+      } else {
+        // User not logged in -> Navigate to Login Page
+        Get.off(() => const LogInPage());
+      }
     });
   }
 
