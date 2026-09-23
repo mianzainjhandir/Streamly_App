@@ -8,7 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:streamly_app/screens/signup/logic.dart';
 
 import '../../widget/textfield.dart';
-import '../forgot_password/view.dart';
+import '../login/view.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -94,13 +94,29 @@ class _SignUpState extends State<SignUp> {
 
                   Gap(10),
                   CustomTextField(
+                    controller: controller.nameController,
+                    hintText: 'Full Name',
+                    prefixIcon: Icons.person_outline,
+                    focusColor: Colors.indigo,
+                    helperText: "Please enter your full name",
+                  ),
+                  Gap(10),
+                  CustomTextField(
                     controller: controller.emailController,
-                    hintText: 'Email or Username',
+                    hintText: 'Email Address',
                     prefixIcon: Icons.email_outlined,
                     focusColor: Colors.indigo,
                     keyboardType: TextInputType.emailAddress,
                   ),
-                  const SizedBox(height: 15),
+                  Gap(10),
+                  CustomTextField(
+                    controller: controller.userNameController,
+                    hintText: 'Username',
+                    prefixIcon: Icons.motion_photos_pause_rounded,
+                    focusColor: Colors.indigo,
+                    keyboardType: TextInputType.name,
+                  ),
+                  const SizedBox(height: 10),
                   // Password Field using CustomTextField
                   CustomTextField(
                     controller: controller.passwordController,
@@ -125,7 +141,7 @@ class _SignUpState extends State<SignUp> {
                         ),
                       ),
                       child: const Text(
-                        'Login',
+                        'Sign Up',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -133,22 +149,6 @@ class _SignUpState extends State<SignUp> {
                         ),
                       ),
                     ),
-                  ),
-                  Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          GestureDetector(
-                            onTap: (){
-                              Get.to(()=> ForgotPassword());
-                            },
-                            child: Text("Forgot Password?",style: TextStyle(color: Colors.purple),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                   ),
                   Gap(10),
                   const SizedBox(height: 40),
@@ -158,20 +158,20 @@ class _SignUpState extends State<SignUp> {
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: TextButton(
                         onPressed: () {
-                          Get.to(()=> SignUp());
+                          Get.to(()=> const LogInPage());
                         },
                         child: Text.rich(
                           TextSpan(
                             children: [
                               TextSpan(
-                                text: "Don't have an account? ",
+                                text: "Already have an account? ",
                                 style: GoogleFonts.poppins(
                                   color: Colors.grey,
                                   fontSize: 15,
                                 ),
                               ),
                               TextSpan(
-                                text: "Sign Up",
+                                text: "Log In",
                                 style: GoogleFonts.poppins(
                                   color: Colors.deepPurple,
                                   fontWeight: FontWeight.w700,

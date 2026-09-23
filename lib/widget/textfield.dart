@@ -131,7 +131,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             padding: const EdgeInsets.only(left: 5),
             child: Text(
               widget.helperText ??
-                  (widget.isPassword ? "Please enter your password" : "Please enter your email address"),
+                  "Please enter your ${widget.hintText.toLowerCase()}",
               style: TextStyle(
                 fontSize: 11,
                 color: activeColor,

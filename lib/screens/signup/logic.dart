@@ -12,21 +12,16 @@ class SignUpController extends GetxController {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController userNameController = TextEditingController();
 
   Future<void> signUp() async {
     String name = nameController.text.trim();
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
-    String confirmPassword = confirmPasswordController.text.trim();
+    String userName = userNameController.text.trim();
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+    if (name.isEmpty || email.isEmpty || password.isEmpty || userName.isEmpty) {
       Get.snackbar("Error", "All fields are required!", backgroundColor: Colors.red, colorText: Colors.white);
-      return;
-    }
-
-    if (password != confirmPassword) {
-      Get.snackbar("Error", "Passwords do not match!", backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
@@ -45,6 +40,7 @@ class SignUpController extends GetxController {
         'uid': userCredential.user!.uid,
         'name': name,
         'email': email,
+        'username': userName,
         'createdAt': FieldValue.serverTimestamp(),
       }).then((value) {
         print("Firestore Success: Document created");
@@ -59,7 +55,7 @@ class SignUpController extends GetxController {
       nameController.clear();
       emailController.clear();
       passwordController.clear();
-      confirmPasswordController.clear();
+      userNameController.clear();
 
       // Navigate to Home
       Get.offAll(() => const HomeScreen());
