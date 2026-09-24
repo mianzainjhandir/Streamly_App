@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:streamly_app/screens/notification/notification.dart';
 import 'profile/view.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -95,7 +96,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         clipBehavior: Clip.none,
                         children: [
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.to( () => NotificationPage());
+                            },
                             icon: const Icon(
                               Icons.notifications_outlined,
                               color: Colors.white,
