@@ -155,20 +155,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             // Video Player Container
             Container(
               width: double.infinity,
-              constraints: const BoxConstraints(
-                maxHeight: 220,
-              ),
+              height: 240,
               color: Colors.black,
               child: _isInitialized
                   ? Stack(
                       alignment: Alignment.bottomCenter,
                       children: [
-                        Center(
-                          child: AspectRatio(
-                            aspectRatio: _controller.value.aspectRatio > 0
-                                ? _controller.value.aspectRatio
-                                : 16 / 9,
-                            child: VideoPlayer(_controller),
+                        SizedBox.expand(
+                          child: FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: SizedBox(
+                              width: _controller.value.size.width > 0
+                                  ? _controller.value.size.width
+                                  : 16,
+                              height: _controller.value.size.height > 0
+                                  ? _controller.value.size.height
+                                  : 9,
+                              child: VideoPlayer(_controller),
+                            ),
                           ),
                         ),
                         // Play/Pause Overlay & Progress Bar
