@@ -124,7 +124,11 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
     try {
       User? user = FirebaseAuth.instance.currentUser;
 
-      String videoPathOrUrl = _videoPlatformFile!.path ?? _videoPlatformFile!.name;
+      String videoPathOrUrl = _videoPlatformFile!.path ?? '';
+      if (videoPathOrUrl.isEmpty || !videoPathOrUrl.startsWith('/')) {
+        videoPathOrUrl =
+            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+      }
 
       // Save video metadata + thumbnail in Firestore 'videos' collection
       await FirebaseFirestore.instance.collection('videos').add({

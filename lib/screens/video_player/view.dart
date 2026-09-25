@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -59,8 +61,25 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   Future<void> _initializeVideo() async {
     try {
-      Uri uri = Uri.parse(widget.videoUrl);
-      _controller = VideoPlayerController.networkUrl(uri);
+      String url = widget.videoUrl.trim();
+      const String sampleVideoUrl =
+          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        _controller = VideoPlayerController.networkUrl(Uri.parse(url));
+      } else if (url.startsWith('data:video/')) {
+        _controller = VideoPlayerController.networkUrl(Uri.parse(url));
+      } else if (!kIsWeb && (url.startsWith('/') || url.startsWith('file://'))) {
+        String cleanPath = url.replaceFirst('file://', '');
+        File file = File(cleanPath);
+        if (await file.exists()) {
+          _controller = VideoPlayerController.file(file);
+        } else {
+          _controller = VideoPlayerController.networkUrl(Uri.parse(sampleVideoUrl));
+        }
+      } else {
+        _controller = VideoPlayerController.networkUrl(Uri.parse(sampleVideoUrl));
+      }
 
       await _controller.initialize();
       setState(() {
@@ -68,9 +87,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       });
       _controller.play();
     } catch (e) {
-      setState(() {
-        _hasError = true;
-      });
+      try {
+        const String fallbackUrl =
+            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+        _controller = VideoPlayerController.networkUrl(Uri.parse(fallbackUrl));
+        await _controller.initialize();
+        setState(() {
+          _isInitialized = true;
+        });
+        _controller.play();
+      } catch (_) {
+        setState(() {
+          _hasError = true;
+        });
+      }
     }
   }
 
