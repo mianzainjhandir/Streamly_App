@@ -155,15 +155,25 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             // Video Player Container
             Container(
               width: double.infinity,
-              height: 220,
+              height: 260,
               color: Colors.black,
               child: _isInitialized
                   ? Stack(
                       alignment: Alignment.bottomCenter,
                       children: [
-                        AspectRatio(
-                          aspectRatio: _controller.value.aspectRatio,
-                          child: VideoPlayer(_controller),
+                        SizedBox.expand(
+                          child: FittedBox(
+                            fit: BoxFit.cover,
+                            child: SizedBox(
+                              width: _controller.value.size.width > 0
+                                  ? _controller.value.size.width
+                                  : 16,
+                              height: _controller.value.size.height > 0
+                                  ? _controller.value.size.height
+                                  : 9,
+                              child: VideoPlayer(_controller),
+                            ),
+                          ),
                         ),
                         // Play/Pause Overlay & Progress Bar
                         GestureDetector(
