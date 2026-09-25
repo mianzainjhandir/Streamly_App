@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -20,11 +21,12 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
   final TextEditingController _descriptionController = TextEditingController();
 
   String? _selectedCategory;
-  File? _videoFile;
+
+  PlatformFile? _videoPlatformFile;
   String? _videoFileName;
   String? _videoFileSize;
 
-  File? _thumbnailFile;
+  PlatformFile? _thumbnailPlatformFile;
   String? _thumbnailBase64;
 
   bool _isUploading = false;
@@ -49,19 +51,16 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
   // Pick Video File
   Future<void> _pickVideo() async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      PlatformFile? file = await FilePicker.pickFile(
         type: FileType.video,
-        allowMultiple: false,
       );
 
-      if (result != null && result.files.single.path != null) {
-        File file = File(result.files.single.path!);
-        int bytes = await file.length();
-        double mb = bytes / (1024 * 1024);
+      if (file != null) {
+        double mb = file.size / (1024 * 1024);
 
         setState(() {
-          _videoFile = file;
-          _videoFileName = result.files.single.name;
+          _videoPlatformFile = file;
+          _videoFileName = file.name;
           _videoFileSize = '${mb.toStringAsFixed(1)} MB';
         });
       }
@@ -74,19 +73,24 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
   // Pick Thumbnail Image
   Future<void> _pickThumbnail() async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      PlatformFile? file = await FilePicker.pickFile(
         type: FileType.image,
-        allowMultiple: false,
       );
 
-      if (result != null && result.files.single.path != null) {
-        File file = File(result.files.single.path!);
-        List<int> imageBytes = await file.readAsBytes();
-        String base64Image = base64Encode(imageBytes);
+      if (file != null) {
+        List<int>? imageBytes = file.bytes;
+        if (imageBytes == null && file.path != null && !kIsWeb) {
+          imageBytes = await File(file.path!).readAsBytes();
+        }
+
+        String? base64Image;
+        if (imageBytes != null) {
+          base64Image = 'data:image/jpeg;base64,${base64Encode(imageBytes)}';
+        }
 
         setState(() {
-          _thumbnailFile = file;
-          _thumbnailBase64 = 'data:image/jpeg;base64,$base64Image';
+          _thumbnailPlatformFile = file;
+          _thumbnailBase64 = base64Image;
         });
       }
     } catch (e) {
@@ -100,7 +104,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
     String title = _titleController.text.trim();
     String description = _descriptionController.text.trim();
 
-    if (_videoFile == null) {
+    if (_videoPlatformFile == null) {
       Get.snackbar('Required', 'Please select a video to upload!',
           backgroundColor: Colors.redAccent, colorText: Colors.white);
       return;
@@ -125,7 +129,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
     try {
       User? user = FirebaseAuth.instance.currentUser;
 
-      String videoPathOrUrl = _videoFile!.path;
+      String videoPathOrUrl = _videoPlatformFile!.path ?? _videoPlatformFile!.name;
 
       // Save video metadata + thumbnail in Firestore 'videos' collection
       await FirebaseFirestore.instance.collection('videos').add({
@@ -136,7 +140,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
         'videoName': _videoFileName ?? 'video.mp4',
         'videoSize': _videoFileSize ?? '0 MB',
         'thumbnailUrl': _thumbnailBase64 ?? '',
-        'thumbnailPath': _thumbnailFile?.path ?? '',
+        'thumbnailPath': _thumbnailPlatformFile?.path ?? '',
         'userId': user?.uid ?? '',
         'userEmail': user?.email ?? '',
         'userName': user?.displayName ?? 'Creator',
@@ -152,10 +156,10 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
       _titleController.clear();
       _descriptionController.clear();
       setState(() {
-        _videoFile = null;
+        _videoPlatformFile = null;
         _videoFileName = null;
         _videoFileSize = null;
-        _thumbnailFile = null;
+        _thumbnailPlatformFile = null;
         _thumbnailBase64 = null;
         _selectedCategory = null;
         _isUploading = false;
@@ -395,13 +399,27 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: _thumbnailFile != null
-                        ? Image.file(
-                            _thumbnailFile!,
-                            width: 120,
-                            height: 75,
-                            fit: BoxFit.cover,
-                          )
+                    child: _thumbnailPlatformFile != null
+                        ? (_thumbnailPlatformFile!.bytes != null
+                            ? Image.memory(
+                                _thumbnailPlatformFile!.bytes!,
+                                width: 120,
+                                height: 75,
+                                fit: BoxFit.cover,
+                              )
+                            : (_thumbnailPlatformFile!.path != null && !kIsWeb
+                                ? Image.file(
+                                    File(_thumbnailPlatformFile!.path!),
+                                    width: 120,
+                                    height: 75,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Container(
+                                    width: 120,
+                                    height: 75,
+                                    color: const Color(0xFFF8F9FE),
+                                    child: const Icon(Icons.image, color: Colors.grey),
+                                  )))
                         : Container(
                             width: 120,
                             height: 75,
@@ -420,7 +438,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                   TextButton(
                     onPressed: _pickThumbnail,
                     child: Text(
-                      _thumbnailFile != null ? 'Change' : 'Choose Thumbnail',
+                      _thumbnailPlatformFile != null ? 'Change' : 'Choose Thumbnail',
                       style: GoogleFonts.poppins(
                         color: const Color(0xFF8A2BE2),
                         fontSize: 14,
