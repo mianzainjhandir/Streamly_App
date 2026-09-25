@@ -40,6 +40,13 @@ class _YouTubePlaylistScreenState extends State<YouTubePlaylistScreen> {
 
   final List<YouTubeVideoItem> _playlist = [
     YouTubeVideoItem(
+      id: 'KFYjIP8Rzhg',
+      title: 'Featured Playlist Video #1',
+      channel: 'Featured Creator',
+      views: '180K views • Recently added',
+      thumbnailUrl: 'https://img.youtube.com/vi/KFYjIP8Rzhg/hqdefault.jpg',
+    ),
+    YouTubeVideoItem(
       id: 'gQJ97R43x9Q',
       title: 'Flutter UI Masterclass - Building Modern Streaming App',
       channel: 'Streamly Official',
@@ -66,13 +73,6 @@ class _YouTubePlaylistScreenState extends State<YouTubePlaylistScreen> {
       channel: 'TechStream',
       views: '340K views • 2 weeks ago',
       thumbnailUrl: 'https://img.youtube.com/vi/dFPri23M16A/hqdefault.jpg',
-    ),
-    YouTubeVideoItem(
-      id: '1ukSR1GRtMU',
-      title: 'Jetpack Compose & Flutter Modern Design System',
-      channel: 'UiDesignPro',
-      views: '95K views • 3 weeks ago',
-      thumbnailUrl: 'https://img.youtube.com/vi/1ukSR1GRtMU/hqdefault.jpg',
     ),
   ];
 
