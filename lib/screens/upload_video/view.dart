@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -27,6 +26,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
   String? _videoFileSize;
 
   PlatformFile? _thumbnailPlatformFile;
+  Uint8List? _thumbnailBytes;
   String? _thumbnailBase64;
 
   bool _isUploading = false;
@@ -56,7 +56,8 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
       );
 
       if (file != null) {
-        double mb = file.size / (1024 * 1024);
+        int bytesCount = await file.length() ?? 0;
+        double mb = bytesCount / (1024 * 1024);
 
         setState(() {
           _videoPlatformFile = file;
@@ -78,18 +79,12 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
       );
 
       if (file != null) {
-        List<int>? imageBytes = file.bytes;
-        if (imageBytes == null && file.path != null && !kIsWeb) {
-          imageBytes = await File(file.path!).readAsBytes();
-        }
-
-        String? base64Image;
-        if (imageBytes != null) {
-          base64Image = 'data:image/jpeg;base64,${base64Encode(imageBytes)}';
-        }
+        Uint8List bytes = await file.readAsBytes();
+        String base64Image = 'data:image/jpeg;base64,${base64Encode(bytes)}';
 
         setState(() {
           _thumbnailPlatformFile = file;
+          _thumbnailBytes = bytes;
           _thumbnailBase64 = base64Image;
         });
       }
@@ -160,6 +155,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
         _videoFileName = null;
         _videoFileSize = null;
         _thumbnailPlatformFile = null;
+        _thumbnailBytes = null;
         _thumbnailBase64 = null;
         _selectedCategory = null;
         _isUploading = false;
@@ -399,27 +395,13 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: _thumbnailPlatformFile != null
-                        ? (_thumbnailPlatformFile!.bytes != null
-                            ? Image.memory(
-                                _thumbnailPlatformFile!.bytes!,
-                                width: 120,
-                                height: 75,
-                                fit: BoxFit.cover,
-                              )
-                            : (_thumbnailPlatformFile!.path != null && !kIsWeb
-                                ? Image.file(
-                                    File(_thumbnailPlatformFile!.path!),
-                                    width: 120,
-                                    height: 75,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Container(
-                                    width: 120,
-                                    height: 75,
-                                    color: const Color(0xFFF8F9FE),
-                                    child: const Icon(Icons.image, color: Colors.grey),
-                                  )))
+                    child: _thumbnailBytes != null
+                        ? Image.memory(
+                            _thumbnailBytes!,
+                            width: 120,
+                            height: 75,
+                            fit: BoxFit.cover,
+                          )
                         : Container(
                             width: 120,
                             height: 75,
