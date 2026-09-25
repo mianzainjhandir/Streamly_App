@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:streamly_app/screens/notification/notification.dart';
 import 'package:streamly_app/screens/video_player/view.dart';
+import 'package:streamly_app/screens/youtube_playlist/view.dart';
 import 'profile/view.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,6 +19,30 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedCategory = 'All';
+
+  final List<YouTubeVideoItem> _youtubePlaylist = [
+    YouTubeVideoItem(
+      id: 'gQJ97R43x9Q',
+      title: 'Flutter UI Masterclass - Building Modern Streaming App',
+      channel: 'Streamly Official',
+      views: '125K views • 2 days ago',
+      thumbnailUrl: 'https://img.youtube.com/vi/gQJ97R43x9Q/hqdefault.jpg',
+    ),
+    YouTubeVideoItem(
+      id: 'VPvVD8t02U8',
+      title: 'GetX State Management & Responsive UI Navigation',
+      channel: 'CodeWithMe',
+      views: '89K views • 5 days ago',
+      thumbnailUrl: 'https://img.youtube.com/vi/VPvVD8t02U8/hqdefault.jpg',
+    ),
+    YouTubeVideoItem(
+      id: 'x0uinJvhNxI',
+      title: 'Firebase Authentication & Firestore Full Course',
+      channel: 'DevNinja',
+      views: '210K views • 1 week ago',
+      thumbnailUrl: 'https://img.youtube.com/vi/x0uinJvhNxI/hqdefault.jpg',
+    ),
+  ];
 
   @override
   void dispose() {
@@ -235,8 +260,148 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const Gap(20),
 
+              // YouTube Featured Playlist Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Featured Playlist',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Get.to(() => const YouTubePlaylistScreen());
+                    },
+                    child: Text(
+                      'View All',
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFF9E47FF),
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const Gap(8),
+
+              // Featured YouTube Playlist Cards
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _youtubePlaylist.length,
+                itemBuilder: (context, index) {
+                  final video = _youtubePlaylist[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Get.to(() => YouTubePlaylistScreen(initialIndex: index));
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1C1C26),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(16),
+                            ),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image.network(
+                                  video.thumbnailUrl,
+                                  width: double.infinity,
+                                  height: 180,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      height: 180,
+                                      color: const Color(0xFF232330),
+                                      child: const Icon(Icons.play_circle_fill_rounded,
+                                          size: 56, color: Colors.white54),
+                                    );
+                                  },
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black45,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.play_arrow_rounded,
+                                    color: Colors.white,
+                                    size: 36,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CircleAvatar(
+                                  radius: 18,
+                                  backgroundColor: const Color(0xFF8A2BE2),
+                                  child: Text(
+                                    video.channel[0],
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const Gap(12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        video.title,
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const Gap(4),
+                                      Text(
+                                        '${video.channel} • ${video.views}',
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.grey.shade400,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+              const Gap(16),
+
               Text(
-                'Recent Videos',
+                'Recent Uploads',
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 18,
@@ -276,7 +441,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (docs.isEmpty) {
                     return Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(30),
+                      padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: const Color(0xFF1C1C26),
                         borderRadius: BorderRadius.circular(16),
@@ -286,24 +451,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Icon(
                             Icons.video_library_outlined,
                             color: Colors.grey,
-                            size: 48,
+                            size: 40,
                           ),
-                          const Gap(12),
+                          const Gap(8),
                           Text(
-                            'No uploaded videos yet',
+                            'No custom uploaded videos yet',
                             style: GoogleFonts.poppins(
                               color: Colors.white,
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const Gap(4),
-                          Text(
-                            'Tap the "+" button below to upload your first video!',
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(
-                              color: Colors.grey.shade400,
-                              fontSize: 12,
                             ),
                           ),
                         ],
