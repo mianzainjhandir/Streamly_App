@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:streamly_app/screens/home.dart';
+import 'package:streamly_app/screens/upload_video/view.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -20,12 +21,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         style: TextStyle(color: Colors.white, fontSize: 18),
       ),
     ),
-    const Center(
-      child: Text(
-        'Create Screen',
-        style: TextStyle(color: Colors.white, fontSize: 18),
-      ),
-    ),
+    const UploadVideoScreen(),
     const Center(
       child: Text(
         'Subscriptions Screen',
