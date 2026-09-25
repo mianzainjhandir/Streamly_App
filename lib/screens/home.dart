@@ -1,8 +1,11 @@
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:streamly_app/screens/notification/notification.dart';
+import 'package:streamly_app/screens/video_player/view.dart';
 import 'profile/view.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,11 +17,45 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
+  String _selectedCategory = 'All';
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Widget _buildThumbnailWidget(String thumbnailUrl) {
+    if (thumbnailUrl.isNotEmpty && thumbnailUrl.startsWith('data:image')) {
+      try {
+        final base64Data = thumbnailUrl.split(',').last;
+        final bytes = base64Decode(base64Data);
+        return Image.memory(
+          bytes,
+          width: double.infinity,
+          height: 180,
+          fit: BoxFit.cover,
+        );
+      } catch (_) {}
+    }
+    return Container(
+      height: 180,
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF8A2BE2), Color(0xFF4A00E0)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: const Center(
+        child: Icon(
+          Icons.play_circle_fill_rounded,
+          size: 56,
+          color: Colors.white,
+        ),
+      ),
+    );
   }
 
   @override
@@ -31,18 +68,16 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top App Bar Row (Logo, Title, Notification with red badge, Profile Avatar)
+              // Top App Bar Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Logo + App Title
                   Row(
                     children: [
-                      // 1. LOGO IMAGE (Aap yahan apni logo image ka name set kar sakte hain)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.asset(
-                          'assets/images/logo.png', // <-- Change Logo pic name here
+                          'assets/images/logo.png',
                           width: 36,
                           height: 36,
                           fit: BoxFit.cover,
@@ -88,8 +123,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-
-                  // Actions (Notification Bell with Red Badge & Profile Avatar)
                   Row(
                     children: [
                       Stack(
@@ -97,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           IconButton(
                             onPressed: () {
-                              Get.to( () => NotificationPage());
+                              Get.to(() => const NotificationPage());
                             },
                             icon: const Icon(
                               Icons.notifications_outlined,
@@ -120,7 +153,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       const Gap(4),
-                      // 2. PROFILE IMAGE (Aap yahan apni profile pic ka name set kar sakte hain)
                       GestureDetector(
                         onTap: () {
                           Get.to(() => const ProfileScreen());
@@ -128,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(18),
                           child: Image.asset(
-                            'assets/images/profile.jpg', // <-- Change Profile pic name here
+                            'assets/images/profile.jpg',
                             width: 36,
                             height: 36,
                             fit: BoxFit.cover,
@@ -183,10 +215,245 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              const Gap(24),
-              // Now starts working on other things..
-              // Yahan aap apna baqi content design kar sakte hain
+              const Gap(20),
+
+              // Category Chips Row
+              SizedBox(
+                height: 38,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    _buildCategoryChip('All'),
+                    _buildCategoryChip('Gaming'),
+                    _buildCategoryChip('Music'),
+                    _buildCategoryChip('Tech'),
+                    _buildCategoryChip('Education'),
+                    _buildCategoryChip('Movies'),
+                  ],
+                ),
+              ),
+
+              const Gap(20),
+
+              Text(
+                'Recent Videos',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const Gap(12),
+
+              // StreamBuilder to fetch videos from Firestore
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('videos')
+                    .orderBy('createdAt', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(30),
+                        child: CircularProgressIndicator(color: Color(0xFF8A2BE2)),
+                      ),
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'Error loading videos',
+                        style: GoogleFonts.poppins(color: Colors.redAccent),
+                      ),
+                    );
+                  }
+
+                  final docs = snapshot.data?.docs ?? [];
+
+                  if (docs.isEmpty) {
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(30),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1C1C26),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: [
+                          const Icon(
+                            Icons.video_library_outlined,
+                            color: Colors.grey,
+                            size: 48,
+                          ),
+                          const Gap(12),
+                          Text(
+                            'No uploaded videos yet',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Gap(4),
+                          Text(
+                            'Tap the "+" button below to upload your first video!',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              color: Colors.grey.shade400,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: docs.length,
+                    itemBuilder: (context, index) {
+                      final doc = docs[index];
+                      final data = doc.data() as Map<String, dynamic>;
+
+                      String title = data['title'] ?? 'Untitled Video';
+                      String description = data['description'] ?? '';
+                      String category = data['category'] ?? 'General';
+                      String videoUrl = data['videoUrl'] ?? '';
+                      String thumbnailUrl = data['thumbnailUrl'] ?? '';
+                      String userName = data['userName'] ?? 'Creator';
+                      int likesCount = data['likesCount'] ?? 0;
+                      int viewsCount = data['viewsCount'] ?? 0;
+
+                      return GestureDetector(
+                        onTap: () {
+                          Get.to(() => VideoPlayerScreen(
+                                videoId: doc.id,
+                                title: title,
+                                description: description,
+                                category: category,
+                                videoUrl: videoUrl,
+                                userName: userName,
+                                likesCount: likesCount,
+                                viewsCount: viewsCount,
+                              ));
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1C1C26),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(16),
+                                ),
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    _buildThumbnailWidget(thumbnailUrl),
+                                    Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.black45,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.play_arrow_rounded,
+                                        color: Colors.white,
+                                        size: 36,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 18,
+                                      backgroundColor: const Color(0xFF8A2BE2),
+                                      child: Text(
+                                        userName.isNotEmpty ? userName[0].toUpperCase() : 'C',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    const Gap(12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            title,
+                                            style: GoogleFonts.poppins(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const Gap(4),
+                                          Text(
+                                            '$userName • $viewsCount views • $category',
+                                            style: GoogleFonts.poppins(
+                                              color: Colors.grey.shade400,
+                                              fontSize: 11,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryChip(String label) {
+    final isSelected = _selectedCategory == label;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedCategory = label;
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF8A2BE2) : const Color(0xFF1C1C26),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.poppins(
+            color: isSelected ? Colors.white : Colors.grey.shade400,
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
       ),
